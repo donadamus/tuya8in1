@@ -115,7 +115,7 @@ class Tuya8in1Sensor(CoordinatorEntity, SensorEntity):
         }
         
         # Dodaje informacje o ostatniej aktualizacji
-        if self.coordinator.last_update_success_time:
-            attrs["last_update"] = self.coordinator.last_update_success_time.isoformat()
+        if self.coordinator.last_update_success:
+            attrs["last_update_success"] = self.coordinator.last_update_success
         
         return attrs

@@ -4,10 +4,16 @@ Stałe dla integracji Tuya 8-in-1 Water Quality Tester
 
 from homeassistant.const import (
     UnitOfTemperature,
-    UnitOfElectricPotential,
     CONCENTRATION_PARTS_PER_MILLION,
     PERCENTAGE,
 )
+
+# Fallback dla starszych wersji HA
+try:
+    from homeassistant.const import UnitOfElectricPotential
+    MILLIVOLT = UnitOfElectricPotential.MILLIVOLT
+except ImportError:
+    MILLIVOLT = "mV"
 
 DOMAIN = "tuya_8in1"
 
@@ -69,7 +75,7 @@ SENSOR_TYPES = {
     "orp": {
         "name": "ORP",
         "dps_id": 131,  # orp_current: 518 mV
-        "unit": UnitOfElectricPotential.MILLIVOLT,
+        "unit": MILLIVOLT,
         "device_class": "voltage",
         "state_class": "measurement",
         "scale": 1,  # Wartość bezpośrednia
