@@ -13,7 +13,10 @@ DOMAIN = "tuya_8in1"
 
 # Konfiguracja
 CONF_LOCAL_KEY = "local_key"
+CONF_PROTOCOL_VERSION = "protocol_version"
+CONF_SCAN_INTERVAL = "scan_interval"
 DEFAULT_SCAN_INTERVAL = 30
+DEFAULT_PROTOCOL_VERSION = 3.5
 
 # Typy czujników - ZAKTUALIZOWANE na podstawie rzeczywistych kodów DPS
 # Potwierdzone mapowania z urządzenia:
