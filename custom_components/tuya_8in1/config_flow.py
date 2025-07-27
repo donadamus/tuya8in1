@@ -1,6 +1,6 @@
 """
-Config flow dla integracji Tuya 8-in-1 Water Quality Tester
-Umożliwia konfigurację przez interfejs użytkownika
+Config flow for Tuya 8-in-1 Water Quality Tester integration
+Enables configuration through user interface
 """
 
 import logging
@@ -53,28 +53,28 @@ async def validate_input(hass: HomeAssistant, data: Dict[str, Any]) -> Dict[str,
         device.set_socketRetryLimit(2)
         
         # Test connection
-        _LOGGER.info(f"Testowanie połączenia z {data[CONF_HOST]}...")
+        _LOGGER.info(f"Testing connection to {data[CONF_HOST]}...")
         result = await hass.async_add_executor_job(device.status)
         
         if not result:
-            raise CannotConnect("Brak odpowiedzi z urządzenia")
+            raise CannotConnect("No response from device")
         
         if 'Error' in result:
             error_msg = result.get('Error', 'Unknown error')
             error_code = result.get('Err', 'Unknown')
-            raise CannotConnect(f"Błąd urządzenia: {error_msg} (kod: {error_code})")
+            raise CannotConnect(f"Device error: {error_msg} (code: {error_code})")
         
         if 'dps' not in result:
-            raise InvalidData("Brak danych DPS z urządzenia")
+            raise InvalidData("No DPS data from device")
             
-        _LOGGER.info(f"✅ Połączenie OK - otrzymano {len(result['dps'])} DPS")
+        _LOGGER.info(f"✅ Connection OK - received {len(result['dps'])} DPS points")
         return {"title": data.get(CONF_NAME, "Tuya 8-in-1 Tester")}
         
     except ImportError:
-        raise CannotConnect("Biblioteka tinytuya nie jest zainstalowana")
+        raise CannotConnect("tinytuya library is not installed")
     except Exception as e:
-        _LOGGER.error(f"Błąd walidacji: {e}")
-        raise CannotConnect(f"Błąd połączenia: {str(e)}")
+        _LOGGER.error(f"Validation error: {e}")
+        raise CannotConnect(f"Connection error: {str(e)}")
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):

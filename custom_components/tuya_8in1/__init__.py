@@ -1,6 +1,6 @@
 """
 Tuya 8-in-1 Water Quality Tester - Custom Home Assistant Integration
-Integracja umożliwiająca dostęp do wszystkich czujników urządzenia.
+Integration provides access to all device sensors.
 """
 
 import logging
@@ -50,12 +50,12 @@ CONFIG_SCHEMA = vol.Schema(
 )
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Konfiguracja integracji z configuration.yaml"""
+    """Set up integration from configuration.yaml"""
     hass.data.setdefault(DOMAIN, {})
     
     if DOMAIN in config:
         conf = config[DOMAIN]
-        # Tworzymy config entry z danymi z YAML
+        # Create config entry from YAML data
         hass.async_create_task(
             hass.config_entries.flow.async_init(
                 DOMAIN, 
@@ -74,7 +74,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     return True
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Konfiguracja integracji z config entry"""
+    """Set up integration from config entry"""
     device_id = entry.data[CONF_DEVICE_ID]
     local_key = entry.data[CONF_LOCAL_KEY]
     host = entry.data[CONF_HOST]
@@ -94,7 +94,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Usuwanie integracji"""
+    """Unload integration"""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     
     if unload_ok:
@@ -103,12 +103,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 class TuyaDataUpdateCoordinator(DataUpdateCoordinator):
-    """Koordynator aktualizacji danych z urządzenia Tuya"""
+    """Data update coordinator for Tuya device"""
     
     def __init__(self, hass: HomeAssistant, device_id: str, local_key: str, host: str, 
                  protocol_version: float = DEFAULT_PROTOCOL_VERSION, 
                  scan_interval: int = DEFAULT_SCAN_INTERVAL):
-        """Inicjalizacja koordynatora"""
+        """Initialize coordinator"""
         self.device_id = device_id
         self.local_key = local_key
         self.host = host
@@ -123,11 +123,11 @@ class TuyaDataUpdateCoordinator(DataUpdateCoordinator):
         )
     
     async def _setup_device(self):
-        """Konfiguruje połączenie z urządzeniem"""
+        """Configure device connection"""
         if self.device is None:
             try:
                 import tinytuya
-                _LOGGER.info(f"Konfigurowanie urządzenia Tuya...")
+                _LOGGER.info(f"Configuring Tuya device...")
                 _LOGGER.info(f"Device ID: {self.device_id}")
                 _LOGGER.info(f"Host: {self.host}")
                 _LOGGER.info(f"Protocol: {self.protocol_version}")
@@ -136,105 +136,105 @@ class TuyaDataUpdateCoordinator(DataUpdateCoordinator):
                     dev_id=self.device_id,
                     address=self.host,
                     local_key=self.local_key,
-                    version=self.protocol_version  # Używa konfigurowalnej wersji
+                    version=self.protocol_version  # Use configurable version
                 )
                 
-                # Ustawienia dla problematycznych połączeń
-                self.device.set_socketTimeout(15)  # Timeout 15s
-                self.device.set_socketRetryLimit(3)  # 3 próby
-                self.device.set_socketRetryDelay(2)  # 2s między próbami
+                # Settings for problematic connections
+                self.device.set_socketTimeout(15)  # 15s timeout
+                self.device.set_socketRetryLimit(3)  # 3 attempts
+                self.device.set_socketRetryDelay(2)  # 2s between attempts
                 
-                _LOGGER.info(f"✅ Skonfigurowano urządzenie Tuya: {self.device_id} (protocol {self.protocol_version})")
-                _LOGGER.info(f"🌐 Sieć: HA(192.168.20.174) -> Device({self.host}:6668)")
+                _LOGGER.info(f"✅ Configured Tuya device: {self.device_id} (protocol {self.protocol_version})")
+                _LOGGER.info(f"🌐 Network: HA(192.168.20.174) -> Device({self.host}:6668)")
                 
-                # Test połączenia z dodatkową diagnostyką
+                # Connection test with additional diagnostics
                 try:
-                    _LOGGER.info("🔍 Test połączenia...")
+                    _LOGGER.info("🔍 Testing connection...")
                     test_data = await self.hass.async_add_executor_job(self.device.status)
                     
                     if test_data and 'dps' in test_data:
-                        _LOGGER.info(f"🎯 Test połączenia OK - otrzymano {len(test_data['dps'])} DPS")
+                        _LOGGER.info(f"🎯 Connection test OK - received {len(test_data['dps'])} DPS")
                         _LOGGER.debug(f"📊 Test DPS data: {test_data['dps']}")
                     elif test_data and 'Error' in test_data:
                         error_code = test_data.get('Err', 'Unknown')
                         error_msg = test_data.get('Error', 'Unknown error')
-                        _LOGGER.error(f"❌ Test - błąd urządzenia: {error_msg} (kod: {error_code})")
-                        # Nie rzucamy wyjątku, może się uda przy właściwym połączeniu
+                        _LOGGER.error(f"❌ Test - device error: {error_msg} (code: {error_code})")
+                        # Don't raise exception, might work in actual use
                     else:
-                        _LOGGER.warning(f"⚠️ Test połączenia - niepełne dane: {test_data}")
+                        _LOGGER.warning(f"⚠️ Connection test - incomplete data: {test_data}")
                         
                 except Exception as test_e:
-                    _LOGGER.warning(f"⚠️ Test połączenia nie powiódł się: {test_e}")
-                    _LOGGER.warning(f"📋 Typ błędu: {type(test_e).__name__}")
-                    # Kontynuuj mimo błędu testu - może działać w rzeczywistym użyciu
+                    _LOGGER.warning(f"⚠️ Connection test failed: {test_e}")
+                    _LOGGER.warning(f"📋 Error type: {type(test_e).__name__}")
+                    # Continue despite test error - might work in real use
                     
             except Exception as e:
-                _LOGGER.error(f"❌ Błąd połączenia z urządzeniem: {e}")
-                raise UpdateFailed(f"Błąd połączenia: {e}")
+                _LOGGER.error(f"❌ Device connection error: {e}")
+                raise UpdateFailed(f"Connection error: {e}")
     
     async def _async_update_data(self):
-        """Pobiera dane z urządzenia"""
+        """Fetch data from device"""
         await self._setup_device()
         
         if self.device is None:
-            raise UpdateFailed("Urządzenie nie zostało skonfigurowane")
+            raise UpdateFailed("Device was not configured")
         
         try:
-            _LOGGER.debug(f"🔄 Próba połączenia z {self.host} z HA IP...")
+            _LOGGER.debug(f"🔄 Attempting connection to {self.host} from HA IP...")
             
-            # Dodatkowe ustawienia przed każdym połączeniem
-            self.device.set_socketTimeout(20)  # Jeszcze dłuższy timeout
-            self.device.set_socketRetryLimit(3)  # Mniej prób, ale szybciej
+            # Additional settings before each connection
+            self.device.set_socketTimeout(20)  # Even longer timeout
+            self.device.set_socketRetryLimit(3)  # Fewer attempts, but faster
             
-            # Dodaj szczegółowe logowanie przed połączeniem
-            _LOGGER.info(f"🌐 Łączenie: HA(192.168.20.174) -> Tuya({self.host}:6668)")
+            # Add detailed logging before connection
+            _LOGGER.info(f"🌐 Connecting: HA(192.168.20.174) -> Tuya({self.host}:6668)")
             _LOGGER.info(f"🔑 Device ID: {self.device_id}, Protocol: {self.protocol_version}")
             
-            # Pobiera status urządzenia
+            # Get device status
             data = await self.hass.async_add_executor_job(self.device.status)
             
-            _LOGGER.debug(f"📦 Otrzymano odpowiedź: {data}")
+            _LOGGER.debug(f"📦 Received response: {data}")
             
             if not data:
-                _LOGGER.warning("❌ Brak odpowiedzi z urządzenia")
-                raise UpdateFailed("Brak odpowiedzi z urządzenia")
+                _LOGGER.warning("❌ No response from device")
+                raise UpdateFailed("No response from device")
             
             if 'Error' in data:
-                error_msg = data.get('Error', 'Nieznany błąd')
+                error_msg = data.get('Error', 'Unknown error')
                 error_code = data.get('Err', 'Unknown')
-                _LOGGER.error(f"❌ Błąd urządzenia: {error_msg} (kod: {error_code})")
-                raise UpdateFailed(f"Błąd urządzenia: {error_msg}")
+                _LOGGER.error(f"❌ Device error: {error_msg} (code: {error_code})")
+                raise UpdateFailed(f"Device error: {error_msg}")
             
             if 'dps' not in data:
-                _LOGGER.warning(f"⚠️ Brak danych DPS z urządzenia. Otrzymano: {data}")
-                raise UpdateFailed("Brak danych DPS z urządzenia")
+                _LOGGER.warning(f"⚠️ No DPS data from device. Received: {data}")
+                raise UpdateFailed("No DPS data from device")
             
-            # Mapuje dane DPS na nazwy czujników
+            # Map DPS data to sensor names
             mapped_data = {}
             dps_data = data['dps']
             
-            _LOGGER.debug(f"📊 Otrzymane DPS data: {dps_data}")
+            _LOGGER.debug(f"📊 Received DPS data: {dps_data}")
             
             for sensor_key, sensor_config in SENSOR_TYPES.items():
                 dps_id = sensor_config.get('dps_id')
                 if dps_id and str(dps_id) in dps_data:
                     raw_value = dps_data[str(dps_id)]
                     
-                    # Konwersja wartości jeśli potrzebna
+                    # Convert value if needed
                     if 'scale' in sensor_config:
                         value = raw_value / sensor_config['scale']
                     else:
                         value = raw_value
                     
                     mapped_data[sensor_key] = value
-                    _LOGGER.debug(f"✅ Mapowane {sensor_key}: {raw_value} -> {value}")
+                    _LOGGER.debug(f"✅ Mapped {sensor_key}: {raw_value} -> {value}")
                 else:
-                    _LOGGER.warning(f"⚠️ Brak DPS {dps_id} dla sensor {sensor_key}")
+                    _LOGGER.warning(f"⚠️ Missing DPS {dps_id} for sensor {sensor_key}")
             
-            _LOGGER.info(f"🎯 Pobrano dane: {mapped_data}")
+            _LOGGER.info(f"🎯 Fetched data: {mapped_data}")
             return mapped_data
             
         except Exception as e:
-            _LOGGER.error(f"❌ Błąd pobierania danych: {e}")
+            _LOGGER.error(f"❌ Data fetch error: {e}")
             _LOGGER.error(f"📍 Host: {self.host}, Device ID: {self.device_id}")
-            raise UpdateFailed(f"Błąd aktualizacji: {e}")
+            raise UpdateFailed(f"Update error: {e}")

@@ -1,5 +1,5 @@
 """
-Czujniki dla integracji Tuya 8-in-1 Water Quality Tester
+Sensors for Tuya 8-in-1 Water Quality Tester integration
 """
 
 import logging
@@ -22,14 +22,14 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Konfiguruje czujniki"""
+    """Set up sensors"""
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
     device_id = config_entry.data[CONF_DEVICE_ID]
     device_name = config_entry.data.get(CONF_NAME, "Tuya 8-in-1 Tester")
     
     entities = []
     
-    # Tworzy encje czujników
+    # Create sensor entities
     for sensor_key, sensor_config in SENSOR_TYPES.items():
         entities.append(
             Tuya8in1Sensor(
@@ -44,7 +44,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 class Tuya8in1Sensor(CoordinatorEntity, SensorEntity):
-    """Reprezentacja czujnika Tuya 8-in-1"""
+    """Representation of a Tuya 8-in-1 sensor"""
     
     def __init__(
         self,
@@ -54,7 +54,7 @@ class Tuya8in1Sensor(CoordinatorEntity, SensorEntity):
         sensor_key: str,
         sensor_config: dict,
     ) -> None:
-        """Inicjalizuje czujnik"""
+        """Initialize the sensor"""
         super().__init__(coordinator)
         
         self._device_id = device_id
@@ -62,32 +62,32 @@ class Tuya8in1Sensor(CoordinatorEntity, SensorEntity):
         self._sensor_key = sensor_key
         self._sensor_config = sensor_config
         
-        # Unikalne ID encji
+        # Unique entity ID
         self._attr_unique_id = f"{device_id}_{sensor_key}"
         
-        # Nazwa czujnika
+        # Sensor name
         self._attr_name = f"{device_name} {sensor_config['name']}"
         
-        # Jednostka miary
+        # Unit of measurement
         self._attr_native_unit_of_measurement = sensor_config.get("unit")
         
-        # Klasa urządzenia
+        # Device class
         self._attr_device_class = sensor_config.get("device_class")
         
-        # Klasa stanu
+        # State class
         self._attr_state_class = sensor_config.get("state_class")
         
-        # Ikona
+        # Icon
         self._attr_icon = sensor_config.get("icon")
         
-        # Informacje o urządzeniu
+        # Device information
         self._attr_device_info = DEVICE_INFO.copy()
         self._attr_device_info["identifiers"] = {(DOMAIN, device_id)}
         self._attr_device_info["name"] = device_name
     
     @property
     def native_value(self) -> Any:
-        """Zwraca aktualną wartość czujnika"""
+        """Return the current sensor value"""
         if self.coordinator.data is None:
             return None
         
@@ -95,7 +95,7 @@ class Tuya8in1Sensor(CoordinatorEntity, SensorEntity):
     
     @property
     def available(self) -> bool:
-        """Zwraca informację o dostępności czujnika"""
+        """Return sensor availability information"""
         return (
             self.coordinator.last_update_success
             and self.coordinator.data is not None
@@ -104,7 +104,7 @@ class Tuya8in1Sensor(CoordinatorEntity, SensorEntity):
     
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
-        """Zwraca dodatkowe atrybuty stanu"""
+        """Return additional state attributes"""
         if not self.coordinator.data:
             return None
         
@@ -114,7 +114,7 @@ class Tuya8in1Sensor(CoordinatorEntity, SensorEntity):
             "dps_id": self._sensor_config.get("dps_id"),
         }
         
-        # Dodaje informacje o ostatniej aktualizacji
+        # Add last update information
         if self.coordinator.last_update_success:
             attrs["last_update_success"] = self.coordinator.last_update_success
         

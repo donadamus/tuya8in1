@@ -1,5 +1,5 @@
 """
-Stałe dla integracji Tuya 8-in-1 Water Quality Tester
+Constants for Tuya 8-in-1 Water Quality Tester integration
 """
 
 from homeassistant.const import (
@@ -8,7 +8,7 @@ from homeassistant.const import (
     PERCENTAGE,
 )
 
-# Fallback dla starszych wersji HA
+# Fallback for older HA versions
 try:
     from homeassistant.const import UnitOfElectricPotential
     MILLIVOLT = UnitOfElectricPotential.MILLIVOLT
@@ -17,23 +17,23 @@ except ImportError:
 
 DOMAIN = "tuya_8in1"
 
-# Konfiguracja
+# Configuration
 CONF_LOCAL_KEY = "local_key"
 CONF_PROTOCOL_VERSION = "protocol_version"
 CONF_SCAN_INTERVAL = "scan_interval"
 DEFAULT_SCAN_INTERVAL = 30
 DEFAULT_PROTOCOL_VERSION = 3.5
 
-# Typy czujników - ZAKTUALIZOWANE na podstawie rzeczywistych kodów DPS
-# Potwierdzone mapowania z urządzenia:
+# Sensor types - UPDATED based on real DPS codes
+# Confirmed mappings from device:
 SENSOR_TYPES = {
     "temperature": {
-        "name": "Temperatura",
+        "name": "Temperature",
         "dps_id": 8,  # temp_current: 238 = 23.8°C
         "unit": UnitOfTemperature.CELSIUS,
         "device_class": "temperature",
         "state_class": "measurement",
-        "scale": 10,  # Dzieli przez 10
+        "scale": 10,  # Divide by 10
         "icon": "mdi:thermometer",
     },
     "ph": {
@@ -42,7 +42,7 @@ SENSOR_TYPES = {
         "unit": "pH",
         "device_class": None,
         "state_class": "measurement",
-        "scale": 100,  # Dzieli przez 100
+        "scale": 100,  # Divide by 100
         "icon": "mdi:test-tube",
     },
     "tds": {
@@ -51,25 +51,25 @@ SENSOR_TYPES = {
         "unit": CONCENTRATION_PARTS_PER_MILLION,
         "device_class": None,
         "state_class": "measurement",
-        "scale": 1,  # Wartość bezpośrednia
+        "scale": 1,  # Direct value
         "icon": "mdi:water-opacity",
     },
     "ec": {
-        "name": "Przewodność",
+        "name": "Conductivity",
         "dps_id": 116,  # ec_current: 718 μS/cm
         "unit": "μS/cm",
         "device_class": None,
         "state_class": "measurement",
-        "scale": 1,  # Wartość bezpośrednia
+        "scale": 1,  # Direct value
         "icon": "mdi:flash",
     },
     "salinity": {
-        "name": "Zasolenie",
+        "name": "Salinity",
         "dps_id": 121,  # salinity_current: 418 = 4.18%
         "unit": PERCENTAGE,
         "device_class": None,
         "state_class": "measurement",
-        "scale": 100,  # Dzieli przez 100
+        "scale": 100,  # Divide by 100
         "icon": "mdi:shaker-outline",
     },
     "orp": {
@@ -78,11 +78,11 @@ SENSOR_TYPES = {
         "unit": MILLIVOLT,
         "device_class": "voltage",
         "state_class": "measurement",
-        "scale": 1,  # Wartość bezpośrednia
+        "scale": 1,  # Direct value
         "icon": "mdi:lightning-bolt",
     },
     "conductivity_factor": {
-        "name": "Współczynnik przewodności",
+        "name": "Conductivity Factor",
         "dps_id": 136,  # cf_current: 718
         "unit": None,
         "device_class": None,
@@ -91,8 +91,8 @@ SENSOR_TYPES = {
         "icon": "mdi:chart-line",
     },
     "pro_sensor": {
-        "name": "Czujnik PRO",
-        "dps_id": 126,  # pro_current: 997 (nieznana jednostka)
+        "name": "PRO Sensor",
+        "dps_id": 126,  # pro_current: 997 (unknown unit)
         "unit": None,
         "device_class": None,
         "state_class": "measurement",
@@ -101,7 +101,7 @@ SENSOR_TYPES = {
     }
 }
 
-# Informacje o urządzeniu
+# Device information
 DEVICE_INFO = {
     "identifiers": {(DOMAIN, "tuya_8in1_tester")},
     "name": "Tuya 8-in-1 Water Quality Tester",
