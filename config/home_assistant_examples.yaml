@@ -1,0 +1,169 @@
+# Przykładowa konfiguracja Home Assistant
+
+## Configuration.yaml
+
+```yaml
+# Konfiguracja przez configuration.yaml (opcjonalna)
+tuya_8in1:
+  device_id: "bf1234567890abcdef"
+  local_key: "1234567890abcdef"
+  host: "192.168.1.100"
+  name: "Tester jakości wody"
+
+# Logowanie debug
+logger:
+  default: info
+  logs:
+    custom_components.tuya_8in1: debug
+    tinytuya: debug
+```
+
+## Przykładowe karty Lovelace
+
+### Karta czujników głównych
+```yaml
+type: entities
+title: Jakość wody - parametry główne
+entities:
+  - entity: sensor.tuya_8in1_tester_temperatura
+    name: Temperatura
+  - entity: sensor.tuya_8in1_tester_ph
+    name: pH
+  - entity: sensor.tuya_8in1_tester_orp
+    name: ORP
+  - entity: sensor.tuya_8in1_tester_tds
+    name: TDS
+```
+
+### Karta wykresów historycznych
+```yaml
+type: history-graph
+title: Historia pomiarów
+entities:
+  - sensor.tuya_8in1_tester_ph
+  - sensor.tuya_8in1_tester_orp
+  - sensor.tuya_8in1_tester_temperatura
+hours_to_show: 24
+refresh_interval: 60
+```
+
+### Karta z alertami
+```yaml
+type: conditional
+conditions:
+  - entity: sensor.tuya_8in1_tester_ph
+    state_not: unknown
+card:
+  type: entities
+  title: Alerty jakości wody
+  entities:
+    - entity: binary_sensor.ph_alert
+      name: Alarm pH
+    - entity: binary_sensor.orp_alert  
+      name: Alarm ORP
+```
+
+## Automatyzacje
+
+### Alert przy niskim pH
+```yaml
+automation:
+  - alias: "Alarm - niskie pH"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.tuya_8in1_tester_ph
+        below: 6.8
+    action:
+      - service: notify.mobile_app
+        data:
+          message: "Uwaga! pH spadło poniżej 6.8 ({{ states('sensor.tuya_8in1_tester_ph') }})"
+          title: "Alert jakości wody"
+```
+
+### Alert przy wysokim ORP
+```yaml
+automation:
+  - alias: "Alarm - wysokie ORP" 
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.tuya_8in1_tester_orp
+        above: 800
+    action:
+      - service: notify.mobile_app
+        data:
+          message: "Uwaga! ORP przekroczyło 800mV ({{ states('sensor.tuya_8in1_tester_orp') }}mV)"
+          title: "Alert ORP"
+```
+
+### Codzienne podsumowanie
+```yaml
+automation:
+  - alias: "Dzienny raport jakości wody"
+    trigger:
+      - platform: time
+        at: "08:00:00"
+    action:
+      - service: notify.mobile_app
+        data:
+          message: >
+            Raport jakości wody:
+            🌡️ Temperatura: {{ states('sensor.tuya_8in1_tester_temperatura') }}°C
+            🧪 pH: {{ states('sensor.tuya_8in1_tester_ph') }}
+            ⚡ ORP: {{ states('sensor.tuya_8in1_tester_orp') }}mV
+            💧 TDS: {{ states('sensor.tuya_8in1_tester_tds') }}ppm
+          title: "Dzienny raport wody"
+```
+
+## Sensory pomocnicze
+
+### Binary sensor dla alertów pH
+```yaml
+binary_sensor:
+  - platform: template
+    sensors:
+      ph_alert:
+        friendly_name: "Alert pH"
+        value_template: >
+          {% set ph = states('sensor.tuya_8in1_tester_ph') | float %}
+          {{ ph < 6.8 or ph > 7.6 }}
+        icon_template: >
+          {% if is_state('binary_sensor.ph_alert', 'on') %}
+            mdi:alert
+          {% else %}
+            mdi:check-circle
+          {% endif %}
+```
+
+### Template sensor dla statusu ogólnego
+```yaml
+sensor:
+  - platform: template
+    sensors:
+      water_quality_status:
+        friendly_name: "Status jakości wody"
+        value_template: >
+          {% set ph = states('sensor.tuya_8in1_tester_ph') | float %}
+          {% set orp = states('sensor.tuya_8in1_tester_orp') | float %}
+          {% set tds = states('sensor.tuya_8in1_tester_tds') | float %}
+          
+          {% if ph >= 7.0 and ph <= 7.4 and orp >= 300 and orp <= 700 and tds <= 500 %}
+            Doskonała
+          {% elif ph >= 6.8 and ph <= 7.6 and orp >= 200 and orp <= 800 and tds <= 600 %}
+            Dobra
+          {% elif ph >= 6.5 and ph <= 8.0 and orp >= 100 and orp <= 900 and tds <= 800 %}
+            Akceptowalna
+          {% else %}
+            Wymaga uwagi
+          {% endif %}
+        icon_template: >
+          {% set status = states('sensor.water_quality_status') %}
+          {% if status == 'Doskonała' %}
+            mdi:water-check
+          {% elif status == 'Dobra' %}
+            mdi:water
+          {% elif status == 'Akceptowalna' %}
+            mdi:water-alert
+          {% else %}
+            mdi:water-off
+          {% endif %}
+```

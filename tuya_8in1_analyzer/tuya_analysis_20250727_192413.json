@@ -1,0 +1,151 @@
+{
+  "timestamp": "2025-07-27T19:24:11.164083",
+  "device_id": "bf70d7388a31ac0421bfyi",
+  "local_scan": {
+    "version_3.5": {
+      "status": {
+        "dps": {
+          "8": 238,
+          "106": 790,
+          "111": 357,
+          "116": 714,
+          "121": 416,
+          "126": 997,
+          "131": 509,
+          "136": 714,
+          "141": 0
+        }
+      },
+      "heartbeat": null,
+      "success": true,
+      "dps_count": 9
+    },
+    "available_dps": {
+      "8": null,
+      "106": null,
+      "111": null,
+      "116": null,
+      "121": null,
+      "126": null,
+      "131": null,
+      "136": null,
+      "141": null
+    }
+  },
+  "cloud_scan": {
+    "device_info": {
+      "code": 2009,
+      "msg": "clientId is invalid",
+      "success": false,
+      "t": 1753637053276,
+      "tid": "83c236046b0e11f0b492d6238a027bdd"
+    },
+    "device_status": {
+      "code": 2009,
+      "msg": "clientId is invalid",
+      "success": false,
+      "t": 1753637053362,
+      "tid": "83cfa5206b0e11f0b492d6238a027bdd"
+    },
+    "device_specifications": {
+      "code": 2009,
+      "msg": "clientId is invalid",
+      "success": false,
+      "t": 1753637053482,
+      "tid": "83e1af0e6b0e11f0884d66005ac75605"
+    },
+    "device_functions": {
+      "code": 2009,
+      "msg": "clientId is invalid",
+      "success": false,
+      "t": 1753637053614,
+      "tid": "83f5f5c16b0e11f0884d66005ac75605"
+    }
+  },
+  "analysis": {
+    "timestamp": "2025-07-27T19:24:13.809756",
+    "sensor_mappings": {
+      "dps_8": {
+        "value": 238,
+        "type": "int",
+        "source": "local_version_3.5"
+      },
+      "dps_106": {
+        "value": 790,
+        "type": "int",
+        "source": "local_version_3.5"
+      },
+      "dps_111": {
+        "value": 357,
+        "type": "int",
+        "source": "local_version_3.5"
+      },
+      "dps_116": {
+        "value": 714,
+        "type": "int",
+        "source": "local_version_3.5"
+      },
+      "dps_121": {
+        "value": 416,
+        "type": "int",
+        "source": "local_version_3.5"
+      },
+      "dps_126": {
+        "value": 997,
+        "type": "int",
+        "source": "local_version_3.5"
+      },
+      "dps_131": {
+        "value": 509,
+        "type": "int",
+        "source": "local_version_3.5"
+      },
+      "dps_136": {
+        "value": 714,
+        "type": "int",
+        "source": "local_version_3.5"
+      },
+      "dps_141": {
+        "value": 0,
+        "type": "int",
+        "source": "local_version_3.5"
+      }
+    },
+    "analysis": {
+      "potential_sensors": {
+        "temp": [
+          "temperature",
+          "temperatura"
+        ],
+        "ph": [
+          "ph",
+          "pH"
+        ],
+        "orp": [
+          "orp",
+          "redox"
+        ],
+        "tds": [
+          "tds",
+          "dissolved_solids"
+        ],
+        "salinity": [
+          "salinity",
+          "zasolenie"
+        ],
+        "ec": [
+          "ec",
+          "conductivity"
+        ],
+        "do": [
+          "do",
+          "dissolved_oxygen"
+        ],
+        "turbidity": [
+          "turbidity",
+          "mętność"
+        ]
+      }
+    }
+  }
+}

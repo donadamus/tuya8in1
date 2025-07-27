@@ -1,0 +1,121 @@
+{
+  "timestamp": "2025-07-27T19:17:10.703864",
+  "device_id": "bf70d7388a31ac0421bfyi",
+  "local_scan": {
+    "version_3.3": {
+      "status": {
+        "Error": "Unexpected Payload from Device",
+        "Err": "904",
+        "Payload": null
+      },
+      "heartbeat": null,
+      "success": false,
+      "note": "Brak danych DPS"
+    },
+    "version_3.1": {
+      "status": {
+        "Error": "Unexpected Payload from Device",
+        "Err": "904",
+        "Payload": null
+      },
+      "heartbeat": null,
+      "success": false,
+      "note": "Brak danych DPS"
+    },
+    "version_3.2": {
+      "status": {
+        "Error": "Unexpected Payload from Device",
+        "Err": "904",
+        "Payload": null
+      },
+      "heartbeat": null,
+      "success": false,
+      "note": "Brak danych DPS"
+    },
+    "version_3.4": {
+      "status": {
+        "Error": "Check device key or version",
+        "Err": "914",
+        "Payload": null
+      },
+      "heartbeat": {
+        "Error": "Check device key or version",
+        "Err": "914",
+        "Payload": null
+      },
+      "success": false,
+      "note": "Brak danych DPS"
+    },
+    "available_dps": {}
+  },
+  "cloud_scan": {
+    "device_info": {
+      "code": 2009,
+      "msg": "clientId is invalid",
+      "success": false,
+      "t": 1753636644092,
+      "tid": "8fdd6ec46b0d11f0bc424a7a32184703"
+    },
+    "device_status": {
+      "code": 2009,
+      "msg": "clientId is invalid",
+      "success": false,
+      "t": 1753636644166,
+      "tid": "8fe8dd3a6b0d11f0b492d6238a027bdd"
+    },
+    "device_specifications": {
+      "code": 2009,
+      "msg": "clientId is invalid",
+      "success": false,
+      "t": 1753636644254,
+      "tid": "8ff67d706b0d11f0bc424a7a32184703"
+    },
+    "device_functions": {
+      "code": 2009,
+      "msg": "clientId is invalid",
+      "success": false,
+      "t": 1753636644315,
+      "tid": "8fffda936b0d11f0bc424a7a32184703"
+    }
+  },
+  "analysis": {
+    "timestamp": "2025-07-27T19:17:24.492208",
+    "sensor_mappings": {},
+    "analysis": {
+      "potential_sensors": {
+        "temp": [
+          "temperature",
+          "temperatura"
+        ],
+        "ph": [
+          "ph",
+          "pH"
+        ],
+        "orp": [
+          "orp",
+          "redox"
+        ],
+        "tds": [
+          "tds",
+          "dissolved_solids"
+        ],
+        "salinity": [
+          "salinity",
+          "zasolenie"
+        ],
+        "ec": [
+          "ec",
+          "conductivity"
+        ],
+        "do": [
+          "do",
+          "dissolved_oxygen"
+        ],
+        "turbidity": [
+          "turbidity",
+          "mętność"
+        ]
+      }
+    }
+  }
+}

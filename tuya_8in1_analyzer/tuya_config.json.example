@@ -1,0 +1,10 @@
+{
+  "device_id": "YOUR_DEVICE_ID",
+  "local_key": "YOUR_LOCAL_KEY",
+  "ip_address": "192.168.1.XXX",
+  "tuya_cloud": {
+    "access_id": "YOUR_ACCESS_ID",
+    "access_secret": "YOUR_ACCESS_SECRET", 
+    "endpoint": "https://openapi.tuyaeu.com"
+  }
+}

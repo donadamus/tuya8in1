@@ -1,0 +1,13 @@
+{
+  "device_id": "bf70d7388a31ac0421bfyi",
+  "local_key": "XfA1Qsm9rXuhdPN}",
+  "ip_address": "192.168.8.199",
+  "protocol_version": 3.5,
+  "category": "dgnbj",
+  "product_id": "layxxij0sdbrfmrf",
+  "tuya_cloud": {
+    "access_id": "YOUR_ACCESS_ID",
+    "access_secret": "YOUR_ACCESS_SECRET",
+    "endpoint": "https://openapi.tuyaeu.com"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "domain": "tuya_8in1",
+  "name": "Tuya 8-in-1 Water Quality Tester",
+  "documentation": "https://github.com/your-repo/tuya-8in1-integration",
+  "dependencies": [],
+  "codeowners": [],
+  "requirements": [
+    "tinytuya>=1.12.0"
+  ],
+  "iot_class": "local_polling",
+  "version": "1.0.0"
+}
