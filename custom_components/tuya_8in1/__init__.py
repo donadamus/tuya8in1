@@ -127,31 +127,42 @@ class TuyaDataUpdateCoordinator(DataUpdateCoordinator):
         if self.device is None:
             try:
                 import tinytuya
+                _LOGGER.info(f"Konfigurowanie urządzenia Tuya...")
+                _LOGGER.info(f"Device ID: {self.device_id}")
+                _LOGGER.info(f"Host: {self.host}")
+                _LOGGER.info(f"Protocol: {self.protocol_version}")
+                
                 self.device = tinytuya.Device(
                     dev_id=self.device_id,
                     address=self.host,
                     local_key=self.local_key,
                     version=self.protocol_version  # Używa konfigurowalnej wersji
                 )
-                _LOGGER.info(f"Połączono z urządzeniem Tuya: {self.device_id} (protocol {self.protocol_version})")
+                _LOGGER.info(f"✅ Połączono z urządzeniem Tuya: {self.device_id} (protocol {self.protocol_version})")
             except Exception as e:
-                _LOGGER.error(f"Błąd połączenia z urządzeniem: {e}")
+                _LOGGER.error(f"❌ Błąd połączenia z urządzeniem: {e}")
                 raise UpdateFailed(f"Błąd połączenia: {e}")
     
     async def _async_update_data(self):
         """Pobiera dane z urządzenia"""
         await self._setup_device()
         
+        if self.device is None:
+            raise UpdateFailed("Urządzenie nie zostało skonfigurowane")
+        
         try:
             # Pobiera status urządzenia
             data = await self.hass.async_add_executor_job(self.device.status)
             
             if not data or 'dps' not in data:
+                _LOGGER.warning(f"Brak danych DPS z urządzenia. Otrzymano: {data}")
                 raise UpdateFailed("Brak danych z urządzenia")
             
             # Mapuje dane DPS na nazwy czujników
             mapped_data = {}
             dps_data = data['dps']
+            
+            _LOGGER.debug(f"Otrzymane DPS data: {dps_data}")
             
             for sensor_key, sensor_config in SENSOR_TYPES.items():
                 dps_id = sensor_config.get('dps_id')
@@ -165,8 +176,11 @@ class TuyaDataUpdateCoordinator(DataUpdateCoordinator):
                         value = raw_value
                     
                     mapped_data[sensor_key] = value
+                    _LOGGER.debug(f"Mapowane {sensor_key}: {raw_value} -> {value}")
+                else:
+                    _LOGGER.warning(f"Brak DPS {dps_id} dla sensor {sensor_key}")
             
-            _LOGGER.debug(f"Pobrano dane: {mapped_data}")
+            _LOGGER.info(f"Pobrano dane: {mapped_data}")
             return mapped_data
             
         except Exception as e:
