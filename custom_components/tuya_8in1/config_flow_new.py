@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_HOST, CONF_NAME, CONF_DEVICE_ID
+from homeassistant.const import CONF_HOST, CONF_NAME
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
@@ -16,6 +16,7 @@ import homeassistant.helpers.config_validation as cv
 
 from .const import (
     DOMAIN, 
+    CONF_DEVICE_ID, 
     CONF_LOCAL_KEY,
     CONF_PROTOCOL_VERSION,
     CONF_SCAN_INTERVAL,
