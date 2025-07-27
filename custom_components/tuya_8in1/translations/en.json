@@ -1,0 +1,61 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configure Tuya 8-in-1 Water Quality Tester",
+        "description": "Enter your Tuya 8-in-1 device credentials. You can find these in Tuya Smart app or Tuya IoT platform.",
+        "data": {
+          "device_id": "Device ID",
+          "local_key": "Local Key", 
+          "host": "IP Address",
+          "name": "Device Name",
+          "protocol_version": "Protocol Version",
+          "scan_interval": "Scan Interval (seconds)"
+        },
+        "data_description": {
+          "device_id": "Device identifier from Tuya IoT platform (e.g. {device_example})",
+          "local_key": "Local key from Tuya IoT platform (e.g. {key_example})",
+          "host": "Device IP address in local network (e.g. {ip_example})",
+          "protocol_version": "Tuya protocol version (usually 3.5 for 8-in-1)",
+          "scan_interval": "How often to fetch data from device (30-60 seconds recommended)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to device. Check IP address, Device ID and Local Key.",
+      "invalid_data": "Device is not returning valid data. Check protocol version.",
+      "unknown": "Unexpected error occurred during setup.",
+      "import_failed": "Failed to import configuration from configuration.yaml"
+    },
+    "abort": {
+      "already_configured": "Device with this Device ID is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Tuya 8-in-1 Options",
+        "description": "Edit device configuration. Current settings: Host: {current_host}, Device: {current_device}",
+        "data": {
+          "host": "IP Address",
+          "device_id": "Device ID",
+          "local_key": "Local Key", 
+          "protocol_version": "Protocol Version",
+          "scan_interval": "Scan Interval (seconds)"
+        },
+        "data_description": {
+          "host": "New device IP address (if changed)",
+          "device_id": "Device ID (change only if device was reset)",
+          "local_key": "Local Key (change only if device was reset)",
+          "protocol_version": "Protocol version (3.5 recommended for 8-in-1)",
+          "scan_interval": "Data fetch frequency (30-60s recommended)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to device with new settings.",
+      "invalid_data": "Device is not returning valid data with new settings.",
+      "unknown": "Unexpected error occurred while saving options."
+    }
+  }
+}

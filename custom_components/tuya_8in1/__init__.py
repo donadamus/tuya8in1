@@ -138,7 +138,36 @@ class TuyaDataUpdateCoordinator(DataUpdateCoordinator):
                     local_key=self.local_key,
                     version=self.protocol_version  # Używa konfigurowalnej wersji
                 )
-                _LOGGER.info(f"✅ Połączono z urządzeniem Tuya: {self.device_id} (protocol {self.protocol_version})")
+                
+                # Ustawienia dla problematycznych połączeń
+                self.device.set_socketTimeout(15)  # Timeout 15s
+                self.device.set_socketRetryLimit(3)  # 3 próby
+                self.device.set_socketRetryDelay(2)  # 2s między próbami
+                
+                _LOGGER.info(f"✅ Skonfigurowano urządzenie Tuya: {self.device_id} (protocol {self.protocol_version})")
+                _LOGGER.info(f"🌐 Sieć: HA(192.168.20.174) -> Device({self.host}:6668)")
+                
+                # Test połączenia z dodatkową diagnostyką
+                try:
+                    _LOGGER.info("🔍 Test połączenia...")
+                    test_data = await self.hass.async_add_executor_job(self.device.status)
+                    
+                    if test_data and 'dps' in test_data:
+                        _LOGGER.info(f"🎯 Test połączenia OK - otrzymano {len(test_data['dps'])} DPS")
+                        _LOGGER.debug(f"📊 Test DPS data: {test_data['dps']}")
+                    elif test_data and 'Error' in test_data:
+                        error_code = test_data.get('Err', 'Unknown')
+                        error_msg = test_data.get('Error', 'Unknown error')
+                        _LOGGER.error(f"❌ Test - błąd urządzenia: {error_msg} (kod: {error_code})")
+                        # Nie rzucamy wyjątku, może się uda przy właściwym połączeniu
+                    else:
+                        _LOGGER.warning(f"⚠️ Test połączenia - niepełne dane: {test_data}")
+                        
+                except Exception as test_e:
+                    _LOGGER.warning(f"⚠️ Test połączenia nie powiódł się: {test_e}")
+                    _LOGGER.warning(f"📋 Typ błędu: {type(test_e).__name__}")
+                    # Kontynuuj mimo błędu testu - może działać w rzeczywistym użyciu
+                    
             except Exception as e:
                 _LOGGER.error(f"❌ Błąd połączenia z urządzeniem: {e}")
                 raise UpdateFailed(f"Błąd połączenia: {e}")
@@ -151,18 +180,40 @@ class TuyaDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed("Urządzenie nie zostało skonfigurowane")
         
         try:
+            _LOGGER.debug(f"🔄 Próba połączenia z {self.host} z HA IP...")
+            
+            # Dodatkowe ustawienia przed każdym połączeniem
+            self.device.set_socketTimeout(20)  # Jeszcze dłuższy timeout
+            self.device.set_socketRetryLimit(3)  # Mniej prób, ale szybciej
+            
+            # Dodaj szczegółowe logowanie przed połączeniem
+            _LOGGER.info(f"🌐 Łączenie: HA(192.168.20.174) -> Tuya({self.host}:6668)")
+            _LOGGER.info(f"🔑 Device ID: {self.device_id}, Protocol: {self.protocol_version}")
+            
             # Pobiera status urządzenia
             data = await self.hass.async_add_executor_job(self.device.status)
             
-            if not data or 'dps' not in data:
-                _LOGGER.warning(f"Brak danych DPS z urządzenia. Otrzymano: {data}")
-                raise UpdateFailed("Brak danych z urządzenia")
+            _LOGGER.debug(f"📦 Otrzymano odpowiedź: {data}")
+            
+            if not data:
+                _LOGGER.warning("❌ Brak odpowiedzi z urządzenia")
+                raise UpdateFailed("Brak odpowiedzi z urządzenia")
+            
+            if 'Error' in data:
+                error_msg = data.get('Error', 'Nieznany błąd')
+                error_code = data.get('Err', 'Unknown')
+                _LOGGER.error(f"❌ Błąd urządzenia: {error_msg} (kod: {error_code})")
+                raise UpdateFailed(f"Błąd urządzenia: {error_msg}")
+            
+            if 'dps' not in data:
+                _LOGGER.warning(f"⚠️ Brak danych DPS z urządzenia. Otrzymano: {data}")
+                raise UpdateFailed("Brak danych DPS z urządzenia")
             
             # Mapuje dane DPS na nazwy czujników
             mapped_data = {}
             dps_data = data['dps']
             
-            _LOGGER.debug(f"Otrzymane DPS data: {dps_data}")
+            _LOGGER.debug(f"📊 Otrzymane DPS data: {dps_data}")
             
             for sensor_key, sensor_config in SENSOR_TYPES.items():
                 dps_id = sensor_config.get('dps_id')
@@ -176,13 +227,14 @@ class TuyaDataUpdateCoordinator(DataUpdateCoordinator):
                         value = raw_value
                     
                     mapped_data[sensor_key] = value
-                    _LOGGER.debug(f"Mapowane {sensor_key}: {raw_value} -> {value}")
+                    _LOGGER.debug(f"✅ Mapowane {sensor_key}: {raw_value} -> {value}")
                 else:
-                    _LOGGER.warning(f"Brak DPS {dps_id} dla sensor {sensor_key}")
+                    _LOGGER.warning(f"⚠️ Brak DPS {dps_id} dla sensor {sensor_key}")
             
-            _LOGGER.info(f"Pobrano dane: {mapped_data}")
+            _LOGGER.info(f"🎯 Pobrano dane: {mapped_data}")
             return mapped_data
             
         except Exception as e:
-            _LOGGER.error(f"Błąd pobierania danych: {e}")
+            _LOGGER.error(f"❌ Błąd pobierania danych: {e}")
+            _LOGGER.error(f"📍 Host: {self.host}, Device ID: {self.device_id}")
             raise UpdateFailed(f"Błąd aktualizacji: {e}")

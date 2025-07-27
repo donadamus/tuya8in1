@@ -1,0 +1,61 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Konfiguracja Tuya 8-in-1 Water Quality Tester",
+        "description": "Wprowadź dane urządzenia Tuya 8-in-1. Znajdziesz je w aplikacji Tuya Smart lub na platformie Tuya IoT.",
+        "data": {
+          "device_id": "Device ID",
+          "local_key": "Local Key",
+          "host": "Adres IP",
+          "name": "Nazwa urządzenia",
+          "protocol_version": "Wersja protokołu",
+          "scan_interval": "Interwał odczytu (sekundy)"
+        },
+        "data_description": {
+          "device_id": "Identyfikator urządzenia z platformy Tuya IoT (np. {device_example})",
+          "local_key": "Klucz lokalny z platformy Tuya IoT (np. {key_example})",
+          "host": "Adres IP urządzenia w sieci lokalnej (np. {ip_example})",
+          "protocol_version": "Wersja protokołu Tuya (zwykle 3.5 dla 8-in-1)",
+          "scan_interval": "Jak często pobierać dane z urządzenia (30-60 sekund zalecane)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nie można połączyć się z urządzeniem. Sprawdź adres IP, Device ID i Local Key.",
+      "invalid_data": "Urządzenie nie zwraca prawidłowych danych. Sprawdź wersję protokołu.",
+      "unknown": "Nieoczekiwany błąd podczas konfiguracji.",
+      "import_failed": "Nie udało się zaimportować konfiguracji z configuration.yaml"
+    },
+    "abort": {
+      "already_configured": "Urządzenie o tym Device ID jest już skonfigurowane."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opcje Tuya 8-in-1",
+        "description": "Edytuj konfigurację urządzenia. Aktualne ustawienia: Host: {current_host}, Device: {current_device}",
+        "data": {
+          "host": "Adres IP",
+          "device_id": "Device ID", 
+          "local_key": "Local Key",
+          "protocol_version": "Wersja protokołu",
+          "scan_interval": "Interwał odczytu (sekundy)"
+        },
+        "data_description": {
+          "host": "Nowy adres IP urządzenia (jeśli się zmienił)",
+          "device_id": "Device ID (zmień tylko jeśli urządzenie było zresetowane)",
+          "local_key": "Local Key (zmień tylko jeśli urządzenie było zresetowane)",
+          "protocol_version": "Wersja protokołu (3.5 zalecane dla 8-in-1)",
+          "scan_interval": "Częstotliwość odczytu danych (30-60s zalecane)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nie można połączyć się z urządzeniem z nowymi ustawieniami.",
+      "invalid_data": "Urządzenie nie zwraca prawidłowych danych z nowymi ustawieniami.",
+      "unknown": "Nieoczekiwany błąd podczas zapisywania opcji."
+    }
+  }
+}
