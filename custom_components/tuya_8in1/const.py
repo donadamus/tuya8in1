@@ -65,11 +65,11 @@ SENSOR_TYPES = {
     },
     "salinity": {
         "name": "Salinity",
-        "dps_id": 121,  # salinity_current: 418 = 4.18%
-        "unit": PERCENTAGE,
+        "dps_id": 121,  # salinity_current: 418 = 418 ppm
+        "unit": CONCENTRATION_PARTS_PER_MILLION,
         "device_class": None,
         "state_class": "measurement",
-        "scale": 100,  # Divide by 100
+        "scale": 1,  # Direct value
         "icon": "mdi:shaker-outline",
     },
     "orp": {
@@ -91,12 +91,12 @@ SENSOR_TYPES = {
         "icon": "mdi:chart-line",
     },
     "pro_sensor": {
-        "name": "PRO Sensor",
+        "name": "Proportion",
         "dps_id": 126,  # pro_current: 997 (unknown unit)
         "unit": None,
         "device_class": None,
         "state_class": "measurement",
-        "scale": 1,
+        "scale": 1000,
         "icon": "mdi:help-circle",
     }
 }
